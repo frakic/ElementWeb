@@ -5,6 +5,7 @@
   "author": "Filip Rakić",
   "license": "ISC",
   "scripts": {
+    "web": "npx cypress open --project ./src/Element-web --config-file ./configuration/config.json",
     "web:prod": "npx cypress open --project ./src/Element-web --config-file ./configuration/config.PROD.json",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write ."
