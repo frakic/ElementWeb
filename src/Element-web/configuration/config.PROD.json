@@ -1,0 +1,6 @@
+{
+  "pluginsFile": "./plugins/index.ts",
+  "extends": "./config.json",
+
+  "baseUrl": "https://app.element.io"
+}

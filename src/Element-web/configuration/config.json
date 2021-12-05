@@ -1,0 +1,23 @@
+{
+  "fixturesFolder": "./fixtures",
+  "integrationFolder": "./tests",
+  "pluginsFile": "./plugins/index.ts",
+  "supportFile": "./support/index.ts",
+  "downloadsFolder": "./downloads",
+  "videosFolder": "./videos",
+  "screenshotsFolder": "./screenshots",
+
+  "video": false,
+
+  "defaultCommandTimeout": 15000,
+
+  "baseUrl": "http://localhost:4200/",
+
+  "env": {
+    "basicUser": {
+      "username": "qa_frakic",
+      "password": "#NmwEF6g$7hX#@!##xYvga^t753LPzo",
+      "securityKey": "EsTL PJic Cu3v v2bM HTYk 5Z23 PvBJ qKtS gpuF ikBR XY25 ZGBt"
+    }
+  }
+}

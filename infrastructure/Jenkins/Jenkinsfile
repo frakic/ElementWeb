@@ -1,0 +1,74 @@
+//!/usr/bin/env groovy
+
+@Library('jenkins-shared-library') _
+
+// This is an example file which could be used to integrate tests into an existing Jenkins CI/CD pipeline
+
+pipeline {
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['QA', 'UAT', 'PROD'], description: 'Environment on which to run tests')
+        booleanParam(name: 'TEST_ELEMENT_WEB', defaultValue: true, description: 'Mark this if you want to run Element web tests')
+        booleanParam(name: 'TEST_ELEMENT_EXAMPLE', defaultValue: true, description: 'Mark this if you want to run some other tests')
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+        timestamps()
+    }
+    agent {
+        node {
+            label 'node-name'
+        }
+    }
+    environment {
+        VERSION = VersionNumber projectStartDate: '1970-01-01', versionNumberString: '${BUILD_YEAR}.${BUILD_MONTH}.${BUILD_DAY}.${BUILDS_TODAY}', versionPrefix: '', worstResultForIncrement: 'SUCCESS'
+    }
+
+    stages {
+        stage('Pre-build Actions') {
+            steps {
+                bat 'npx rimraf ./src/Shared/reports'
+                script {
+                    currentBuild.displayName = params.ENVIRONMENT + '_' + env.VERSION
+                }
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm i'
+            }
+        }
+        stage('Run web tests') {
+            when {
+                expression { params.TEST_ELEMENT_WEB == true }
+            }
+            steps {
+                script {
+                    switch(params.ENVIRONMENT) {
+                        case "QA":
+                            bat 'npx cypress run --project ./src/Element-web --config-file ./configuration/config.QA.json --reporter \"../../node_modules/mochawesome\" --reporter-options \"reportDir=../Shared/reports/individual,reportFilename=spec.json,overwrite=false,html=false,json=true\" --record --key 44bb4361-67e1-438b-9ecd-bcf2428e699e'
+                            break
+                        case "UAT":
+                            bat 'npx cypress run --project ./src/Element-web --config-file ./configuration/config.UAT.json --reporter \"../../node_modules/mochawesome\" --reporter-options \"reportDir=../Shared/reports/individual,reportFilename=spec.json,overwrite=false,html=false,json=true\" --record --key 44bb4361-67e1-438b-9ecd-bcf2428e699e'
+                            break
+                        //case "PROD"
+                        //...
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            bat 'npx mochawesome-merge ./src/Shared/reports/individual/*.json -o ./src/Shared/reports/merged.json'
+            bat 'npx marge ./src/Shared/reports/merged.json -o ./src/Shared/reports/build --inline --charts --code'
+            publishHTML (target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                keepAll: true,
+                reportDir: './src/Shared/reports',
+                reportFiles: 'build.html',
+                reportName: "Test results"
+            ])
+        }
+    }
+}
