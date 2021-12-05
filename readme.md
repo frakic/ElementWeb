@@ -40,10 +40,12 @@ You can use Cypress GUI from there to run all tests located in /src/Element-web/
 
 ### Environments
 
-This framework supports multiple test environments (e.g. QA, UAT, PROD). Configuration file for each environment contains variables like application URL, user credentials etc. and is located in: /src/$ProjectName/configuration/ folder.
+This framework supports multiple test environments (e.g. local, QA, PROD). Configuration file for each environment contains variables like application URL, user credentials etc. and is located in: /src/Element-web/configuration/ folder.
 
-For example, if you had access to a QA environment, you could use the run command and specify the environment like this:
+For example, if you have Element Web running locally, you can use the run command without specifying the environment:
 
 ```bash
-npm run web:qa
+npm run web
 ```
+
+This will point Cypress Test Runner to a url you specified in config.json - baseUrl variable.
